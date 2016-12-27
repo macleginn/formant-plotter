@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf8">
+	<title>Plot formants online</title>
+		<style type="text/css">
+			body {
+				max-width: 900px;
+				margin: auto;
+				padding-bottom: 50px;
+			}
+			#description {
+				text-align: justify;
+			}
+			label {
+				font-family: sans-serif;
+				font-size: 9pt;
+			}
+			p.vspace {
+				line-height: 7px;
+				margin: 0;
+			}
+		</style>
+		<script>
+			var exampleData = `Vowel,Lang,F1,F2
+i,AmericanEnglish,342,2322
+ɪ,AmericanEnglish,427,2034
+e,AmericanEnglish,476,2089
+ɛ,AmericanEnglish,580,1799
+æ,AmericanEnglish,588,1952
+ɑ,AmericanEnglish,768,1333
+ɔ,AmericanEnglish,652,997
+o,AmericanEnglish,497,910
+ʊ,AmericanEnglish,469,1122
+u,AmericanEnglish,378,997
+ʌ,AmericanEnglish,623,1200
+ɝ,AmericanEnglish,474,1379
+u̞,Mara,377,848
+u,Mara,326,1287
+i̞,Mara,329,1907
+i,Mara,294,2127
+ɑ̞,Mara,816,1478
+ɑ,Mara,760,1382
+`
+			function herz2bark(f) {
+				return 13 * Math.atan(0.00076 * f) + 3.5 * Math.atan((f / 7500) ** 2)
+			}
+			function herz2Mel(f) {
+				return 2595 * Math.log10(1 + f/700)
+			}
+			function plotValues(results, processingFunction, layout, colors) {
+				var traceDict = {},
+				    colorDict = {},
+				    colorCount = 0;
+				var data = results['data'];
+				for (var i = data.length - 1; i >= 0; i--) {
+					var v = data[i]['Vowel']
+					if (!traceDict.hasOwnProperty(v)) {
+						colorDict[v] = colors[colorCount % colors.length];
+						colorCount++;
+						traceDict[v] = {
+							x: [],
+							y: [],
+							text: [],
+							textfont: {
+								family: 'Tahoma',
+								size: 20,
+								color: colorDict[v]
+							},
+							marker: {
+								size: 1,
+								color: 'white'
+							},
+							mode: 'text+markers',
+						  type: 'scatter'
+						};
+					}
+					traceDict[v]['x'].push(processingFunction(data[i]['F2']));
+					traceDict[v]['y'].push(processingFunction(data[i]['F1']));
+					traceDict[v]['text'].push(v);
+				}
+				var plotData = [];
+				for (var key in traceDict) {
+					if (!traceDict.hasOwnProperty(key)) { continue }
+					plotData.push(traceDict[key]);
+				}
+				Plotly.newPlot('plotCanvas', plotData, layout);
+			}
+			var colors = ['#f2ae72',
+										'#f2e394',
+										'#588c7e',
+										'#622569',
+										'#b8a9c9',
+										'#e0876a',
+										'#674d3c',
+										'#d9ad7c',
+										'#a2836e',
+										'#87bdd8',
+										'#667292',
+										'#8d9db6',
+										'#484f4f',
+										'#d96459',
+										'#8ca3a3'];
+		</script>
+		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+		<script src="papaparse.min.js"></script>
+		<script src="layout.js"></script>
+		<!-- <script src="exampleData.js"></script> -->
+		<script>
+			function plotExampleValues() {
+				var processingFunction = herz2bark;
+				var layout = layoutBark;
+				Papa.parse(exampleData, {
+					header: true,
+					complete: function(results) {
+						plotValues(results, processingFunction, layout, colors);
+					}
+				});
+			}
+			function plotFormants() {
+				var layout,
+					  processingFunction;
+				var scale = document.getElementById('scale').value;
+				if (scale === 'bark') {
+					layout = layoutBark;
+					processingFunction = herz2bark;
+				} else if (scale === 'mel') {
+					layout = layoutMel;
+					processingFunction = herz2Mel;
+				} else {
+					layout = layoutHerz;
+					processingFunction = function(x) { return x }
+				}
+
+				if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+					alert('The File APIs are not fully supported in this browser.');
+					return;
+				}
+				var input = document.getElementById('csv');
+				if (!input) {
+					alert("Um, couldn’t find the fileinput element.");
+				} else if (!input.files) {
+					alert("This browser doesn’t seem to support the `files` property of file inputs.");
+				} else if (!input.files[0]) {
+					alert("Please select a file before clicking “Plot values”");
+				} else {
+					Papa.parse(input.files[0], {
+						header: true,
+						complete: function(results) {
+							plotValues(results, processingFunction, layout, colors);
+						}
+					});
+				}
+			}
+		</script>
+</head>
+<body onload="plotExampleValues();">
+	<h1>Online formant plotter</h1>
+	<p id="description">Upload a .csv file from your computer. The file must have a header row with column names “Vowel”, “F1”, and “F2” (the order of columns does not matter; other columns may be present as well, they will be disregarded; <a href="https://goo.gl/lYCKTG" target="_blank">example</a>). In order to plot other values (F3–F2, etc.) or use any other scale, preprocess your data accordingly. The “F2” column will be used as the inverted x&#8209;axis, and the “F1” as the inverted y&#8209;axis; the Herz scale means using raw values. Hover over the plot to see additional options provided by Plotly.js (zoom, save as png, etc.).</p>
+	<input type="file" id="csv" accept=".csv">
+	<p class="vspace">&nbsp;</p>
+	<label>Select scale:</label><br/>
+	<select id="scale">
+		<option value="herz">Herz</option>
+		<option value="bark">Bark</option>
+		<option value="mel">Mel</option>
+		option
+	</select>
+	<p class="vspace">&nbsp;</p>
+	<input type="submit" onclick="plotFormants();" value="Plot values">
+	<div id="plotCanvas" style="width: 100%; !important; margin: auto; display: block;"></div>
+	<br/>
+	<br/>
+	<footer style="text-align: center; padding-top: 10px;">
+		Built by <a href="https://rggu.academia.edu/DmitryNikolaev">Dmitry Nikolaev</a> using <a href="https://plot.ly/javascript/">Plotly.js</a>.
+	</footer>
+</body>
+</html>
