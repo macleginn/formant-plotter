@@ -45,10 +45,10 @@ i,Mara,294,2127
 ɑ,Mara,760,1382
 `
 			function herz2bark(f) {
-				return 13 * Math.atan(0.00076 * f) + 3.5 * Math.atan((f / 7500) ** 2)
+				return 13 * Math.atan(0.00076 * f) + 3.5 * Math.atan(Math.pow(f / 7500, 2))
 			}
 			function herz2Mel(f) {
-				return 2595 * Math.log10(1 + f/700)
+				return results = 2595 * Math.log10(1 + f/700)
 			}
 			function plotValues(results, processingFunction, layout, colors) {
 				var traceDict = {},
