@@ -12,7 +12,7 @@ var layoutHerz = {
 	yaxis: {
 		range: [maxY, minY]
 	},
-	showlegend: false,
+	// showlegend: false,
 	margin: {
 		b: margin,
 		l: margin,
@@ -28,7 +28,7 @@ var layoutMel = {
 	yaxis: {
 		range: [herz2Mel(maxY), herz2Mel(minY)]
 	},
-	showlegend: false,
+	// showlegend: false,
 	margin: {
 		b: margin,
 		l: margin,
@@ -44,7 +44,7 @@ var layoutBark = {
 	yaxis: {
 		range: [herz2bark(maxY), herz2bark(minY)]
 	},
-	showlegend: false,
+	// showlegend: false,
 	margin: {
 		b: margin,
 		l: margin,

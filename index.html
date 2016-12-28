@@ -55,12 +55,17 @@ i,Mara,294,2127
 				    colorDict = {},
 				    colorCount = 0;
 				var data = results['data'];
-				for (var i = data.length - 1; i >= 0; i--) {
-					var v = data[i]['Vowel']
+				for (var i = 0; i < data.length; i++) {
+					var v = data[i]['Vowel'];
+					if (v.length === 0) {
+						continue
+					}
+					console.log(v);
 					if (!traceDict.hasOwnProperty(v)) {
 						colorDict[v] = colors[colorCount % colors.length];
 						colorCount++;
 						traceDict[v] = {
+							name: v,
 							x: [],
 							y: [],
 							text: [],
@@ -157,8 +162,8 @@ i,Mara,294,2127
 		</script>
 </head>
 <body onload="plotExampleValues();">
-	<h1>Online formant plotter</h1>
-	<p id="description">Upload a .csv file from your computer. The file must have a header row with column names “Vowel”, “F1”, and “F2” (the order of columns does not matter; other columns may be present as well, they will be disregarded; <a href="https://goo.gl/lYCKTG" target="_blank">example</a>). In order to plot other values (F3–F2, etc.) or use any other scale, preprocess your data accordingly. The “F2” column will be used as the inverted x&#8209;axis, and the “F1” as the inverted y&#8209;axis; the Herz scale means using raw values. Hover over the plot to see additional options provided by Plotly.js (zoom, save as png, etc.).</p>
+	<h1>An online tool for making formant plots</h1>
+	<p id="description">Upload a .csv file from your computer. The file must have a header row with column names “Vowel”, “F1”, and “F2” (the order of columns does not matter; other columns may be present as well, they will be disregarded; <a href="https://goo.gl/lYCKTG" target="_blank">example</a>). In order to plot other values (F3–F2, etc.) or use any other scale, preprocess your data accordingly. The “F2” column will be used as the inverted x&#8209;axis, and the “F1” as the inverted y&#8209;axis; the Herz scale means using raw values. Hover over the plot to see additional options provided by Plotly.js (zoom, save as png, etc.). Points for different vowels can be hidden (and then shown again) by clicking on the corresponding line in the legend. Please send you feedback to dsnikolaev[AT]gmail[DOT]com.</p>
 	<input type="file" id="csv" accept=".csv">
 	<p class="vspace">&nbsp;</p>
 	<label>Select scale:</label><br/>
