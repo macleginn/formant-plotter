@@ -117,6 +117,7 @@ i,Mara,294,2127
 			function plotExampleValues() {
 				var processingFunction = herz2bark;
 				var layout = layoutBark;
+				layout['title'] = "Example plot (Bark scale)";
 				Papa.parse(exampleData, {
 					header: true,
 					complete: function(results) {
@@ -126,13 +127,15 @@ i,Mara,294,2127
 			}
 			function plotFormants() {
 				var layout,
-					  processingFunction;
+					processingFunction;
 				var scale = document.getElementById('scale').value;
 				if (scale === 'bark') {
 					layout = layoutBark;
+					layout['title'] = "Bark scale";
 					processingFunction = herz2bark;
 				} else if (scale === 'mel') {
 					layout = layoutMel;
+					layout['title'] = "Mel scale";
 					processingFunction = herz2Mel;
 				} else {
 					layout = layoutHerz;
@@ -168,7 +171,7 @@ i,Mara,294,2127
 	<p class="vspace">&nbsp;</p>
 	<label>Select scale:</label><br/>
 	<select id="scale">
-		<option value="herz">Herz</option>
+		<option value="herz">Herz (raw values)</option>
 		<option value="bark">Bark</option>
 		<option value="mel">Mel</option>
 		option
